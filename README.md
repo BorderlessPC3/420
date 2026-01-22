@@ -1,4 +1,80 @@
-# React + TypeScript + Vite
+# 420-rerond
+
+Aplicação React + TypeScript + Vite com página de login integrada a servidor AWS.
+
+## Configuração do Ambiente
+
+### Variáveis de Ambiente
+
+Para configurar a conexão com o servidor AWS, crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
+
+```env
+# URL base da API AWS
+VITE_API_BASE_URL=https://seu-servidor-aws.com/api
+```
+
+**Importante:**
+- As variáveis de ambiente no Vite devem começar com `VITE_` para serem expostas ao código do cliente
+- Substitua `https://seu-servidor-aws.com/api` pela URL real do seu servidor AWS
+- O arquivo `.env` não deve ser commitado no Git (já deve estar no `.gitignore`)
+
+### Exemplo de Configuração
+
+```env
+# Desenvolvimento
+VITE_API_BASE_URL=https://api-dev.exemplo.com/api
+
+# Produção
+VITE_API_BASE_URL=https://api.exemplo.com/api
+```
+
+## Estrutura do Projeto
+
+- `src/views/Login.tsx` - Página de login
+- `src/services/auth/authService.ts` - Serviço de autenticação
+- `src/services/api/apiClient.ts` - Cliente HTTP para requisições à API
+
+## Como Usar
+
+1. Instale as dependências:
+```bash
+npm install
+```
+
+2. Configure o arquivo `.env` com a URL do seu servidor AWS
+
+3. Execute o projeto:
+```bash
+npm run dev
+```
+
+4. Acesse `http://localhost:5173` no navegador
+
+## Integração com AWS
+
+A aplicação está preparada para fazer requisições POST para o endpoint `/auth/login` do servidor AWS. O formato esperado é:
+
+**Request:**
+```json
+{
+  "email": "usuario@exemplo.com",
+  "password": "senha123"
+}
+```
+
+**Response esperada:**
+```json
+{
+  "token": "jwt-token-aqui",
+  "user": {
+    "id": "user-id",
+    "email": "usuario@exemplo.com",
+    "name": "Nome do Usuário"
+  }
+}
+```
+
+---
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
