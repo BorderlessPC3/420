@@ -1,28 +1,22 @@
 import { useState } from 'react'
-import { login } from '../services/auth/authService'
+import { useNavigate } from 'react-router-dom'
 import './Login.css'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
     setLoading(true)
 
-    try {
-      const response = await login(email, password)
-      // Aqui você pode redirecionar ou atualizar o estado da aplicação
-      console.log('Login realizado com sucesso:', response)
-      // Exemplo: navigate('/dashboard') ou atualizar contexto de autenticação
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login')
-    } finally {
+    // Simula um pequeno delay antes de redirecionar
+    setTimeout(() => {
       setLoading(false)
-    }
+      navigate('/dashboard')
+    }, 500)
   }
 
   return (
@@ -52,7 +46,6 @@ export default function Login() {
               placeholder="••••••••"
             />
           </div>
-          {error && <div className="error-message">{error}</div>}
           <button type="submit" className="login-button" disabled={loading}>
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
