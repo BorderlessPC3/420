@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Upload } from 'lucide-react'
+import { createSolicitacao } from '../services/solicitacao/solicitacaoService'
 import './NovaSolicitacao.css'
 
 export default function NovaSolicitacao() {
@@ -14,6 +15,8 @@ export default function NovaSolicitacao() {
   })
   const [files, setFiles] = useState<File[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -70,13 +73,32 @@ export default function NovaSolicitacao() {
     setFiles(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implementar envio do formulário
-    console.log('Form data:', formData)
-    console.log('Files:', files)
-    alert('Solicitação criada com sucesso!')
-    navigate('/solicitacoes')
+    setError(null)
+    setIsSubmitting(true)
+
+    try {
+      // Criar solicitação no Firebase
+      await createSolicitacao(
+        {
+          titulo: formData.titulo,
+          tipoObra: formData.tipoObra,
+          localizacao: formData.localizacao,
+          descricao: formData.descricao,
+          status: 'pendente',
+        },
+        files
+      )
+
+      alert('Solicitação criada com sucesso!')
+      navigate('/solicitacoes')
+    } catch (err: any) {
+      console.error('Erro ao criar solicitação:', err)
+      setError(err.message || 'Erro ao criar solicitação. Tente novamente.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleCancel = () => {
@@ -217,8 +239,9 @@ export default function NovaSolicitacao() {
           <button
             type="submit"
             className="btn-criar"
+            disabled={isSubmitting}
           >
-            Criar Solicitação
+            {isSubmitting ? 'Salvando...' : 'Criar Solicitação'}
           </button>
         </div>
       </form>
