@@ -79,8 +79,7 @@ export default function NovaSolicitacao() {
     setIsSubmitting(true)
 
     try {
-      // Criar solicitação no Firebase
-      await createSolicitacao(
+      const id = await createSolicitacao(
         {
           titulo: formData.titulo,
           tipoObra: formData.tipoObra,
@@ -90,9 +89,9 @@ export default function NovaSolicitacao() {
         },
         files
       )
-
-      alert('Solicitação criada com sucesso!')
-      navigate('/solicitacoes')
+      navigate('/solicitacao-registrada', {
+        state: { solicitacaoId: id, titulo: formData.titulo },
+      })
     } catch (err: any) {
       console.error('Erro ao criar solicitação:', err)
       setError(err.message || 'Erro ao criar solicitação. Tente novamente.')

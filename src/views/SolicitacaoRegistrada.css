@@ -1,0 +1,133 @@
+.solicitacao-registrada-container {
+  padding: 24px;
+  max-width: 640px;
+  margin: 0 auto;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.solicitacao-registrada-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.solicitacao-registrada-icon-success {
+  color: #10b981;
+  margin-bottom: 24px;
+}
+
+.solicitacao-registrada-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 12px 0;
+}
+
+.solicitacao-registrada-subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 32px 0;
+}
+
+.solicitacao-registrada-subtitle strong {
+  color: #374151;
+}
+
+.solicitacao-registrada-info {
+  text-align: left;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+}
+
+.solicitacao-registrada-info-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.solicitacao-registrada-info-item:last-child {
+  margin-bottom: 0;
+}
+
+.solicitacao-registrada-info-icon {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.solicitacao-registrada-info-item h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 6px 0;
+}
+
+.solicitacao-registrada-info-item p {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.solicitacao-registrada-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.solicitacao-registrada-btn-primary,
+.solicitacao-registrada-btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.solicitacao-registrada-btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.solicitacao-registrada-btn-primary:hover {
+  background: #2563eb;
+}
+
+.solicitacao-registrada-btn-secondary {
+  background: white;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+.solicitacao-registrada-btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+@media (max-width: 640px) {
+  .solicitacao-registrada-container {
+    padding: 16px;
+  }
+
+  .solicitacao-registrada-card {
+    padding: 28px 20px;
+  }
+
+  .solicitacao-registrada-title {
+    font-size: 20px;
+  }
+}

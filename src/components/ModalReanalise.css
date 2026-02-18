@@ -189,3 +189,127 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Seções do formulário */
+.modal-reanalise-section {
+  margin-bottom: 24px;
+}
+
+.modal-reanalise-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.modal-reanalise-section-description {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* Área de upload */
+.modal-reanalise-upload-area {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #f9fafb;
+}
+
+.modal-reanalise-upload-area:hover {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.modal-reanalise-upload-area.has-files {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.modal-reanalise-upload-icon {
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.modal-reanalise-upload-area:hover .modal-reanalise-upload-icon {
+  color: #3b82f6;
+}
+
+.modal-reanalise-upload-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.modal-reanalise-upload-info {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Lista de arquivos */
+.modal-reanalise-files-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-reanalise-file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.modal-reanalise-file-item svg {
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.modal-reanalise-file-name {
+  flex: 1;
+  color: #1f2937;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal-reanalise-file-size {
+  color: #6b7280;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.modal-reanalise-file-remove {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.modal-reanalise-file-remove:hover {
+  background-color: #fee;
+}

@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import Dashboard from './views/Dashboard'
 import Solicitacoes from './views/Solicitacoes'
 import NovaSolicitacao from './views/NovaSolicitacao'
+import SolicitacaoRegistrada from './views/SolicitacaoRegistrada'
 import './App.css'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="solicitacoes" element={<Solicitacoes />} />
           <Route path="nova-solicitacao" element={<NovaSolicitacao />} />
+          <Route path="solicitacao-registrada" element={<SolicitacaoRegistrada />} />
         </Route>
       </Routes>
     </BrowserRouter>

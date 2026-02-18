@@ -1,0 +1,178 @@
+.checklist-report {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #1f2937;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.checklist-report-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.checklist-report-empresa {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.02em;
+}
+
+.checklist-report-titulo {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.checklist-report-protocolo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e3a5f;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.checklist-report-identificacao {
+  display: grid;
+  gap: 10px 24px;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.checklist-report-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.checklist-report-campo:nth-child(odd).checklist-report-campo:last-child {
+  grid-column: 1 / -1;
+}
+
+.checklist-report-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.checklist-report-valor {
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.checklist-report-nota {
+  background: #1e3a5f;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.checklist-report-nota-label {
+  font-size: 12px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.checklist-report-nota p {
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.95;
+}
+
+.checklist-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.checklist-report-table thead {
+  background: #1e3a5f;
+  color: white;
+}
+
+.checklist-report-table th {
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.checklist-report-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.checklist-report-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.checklist-report-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.col-item {
+  width: 64px;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 600;
+  color: #475569;
+}
+
+.col-documento {
+  min-width: 280px;
+}
+
+.col-situacao {
+  width: 140px;
+  font-weight: 500;
+}
+
+.situacao-aprovado {
+  color: #059669;
+  font-weight: 600;
+}
+
+.situacao-outro {
+  color: #92400e;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .checklist-report-identificacao {
+    grid-template-columns: 1fr;
+  }
+
+  .checklist-report-table {
+    font-size: 13px;
+  }
+
+  .checklist-report-table th,
+  .checklist-report-table td {
+    padding: 10px 8px;
+  }
+
+  .col-documento {
+    min-width: 0;
+  }
+}

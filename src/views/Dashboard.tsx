@@ -20,6 +20,10 @@ export default function Dashboard() {
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoWithFiles[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [statusFiltro, setStatusFiltro] = useState<
+    'todas' | 'pendente' | 'em_analise' | 'aprovada' | 'rejeitada'
+  >('todas')
+  const [busca, setBusca] = useState('')
 
   useEffect(() => {
     loadSolicitacoes()
@@ -47,11 +51,22 @@ export default function Dashboard() {
   const rejeitadas = solicitacoes.filter((s) => s.status === 'rejeitada').length
   const analisadasIA = solicitacoes.filter((s) => s.analisadoPorIA).length
 
-  const ultimasSolicitacoes = [...solicitacoes]
+  const solicitacoesOrdenadas = [...solicitacoes]
     .sort((a, b) => {
       const da = a.createdAt ? new Date(a.createdAt).getTime() : 0
       const db = b.createdAt ? new Date(b.createdAt).getTime() : 0
       return db - da
+    })
+
+  const solicitacoesFiltradas = solicitacoesOrdenadas
+    .filter((s) => (statusFiltro === 'todas' ? true : s.status === statusFiltro))
+    .filter((s) => {
+      if (!busca.trim()) return true
+      const termo = busca.toLowerCase()
+      return (
+        s.titulo.toLowerCase().includes(termo) ||
+        s.localizacao.toLowerCase().includes(termo)
+      )
     })
     .slice(0, 5)
 
@@ -205,20 +220,77 @@ export default function Dashboard() {
               </button>
             </div>
 
-            {ultimasSolicitacoes.length === 0 ? (
+            <div className="dashboard-filtros">
+              <input
+                type="text"
+                className="dashboard-input-busca"
+                placeholder="Buscar por título ou localização..."
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+              />
+              <div className="dashboard-filtros-status">
+                {[
+                  { id: 'todas', label: 'Todas' },
+                  { id: 'pendente', label: 'Pendentes' },
+                  { id: 'em_analise', label: 'Em análise' },
+                  { id: 'aprovada', label: 'Aprovadas' },
+                  { id: 'rejeitada', label: 'Rejeitadas' },
+                ].map((filtro) => (
+                  <button
+                    key={filtro.id}
+                    className={`dashboard-chip ${statusFiltro === filtro.id ? 'active' : ''}`}
+                    onClick={() =>
+                      setStatusFiltro(
+                        filtro.id as
+                          | 'todas'
+                          | 'pendente'
+                          | 'em_analise'
+                          | 'aprovada'
+                          | 'rejeitada'
+                      )
+                    }
+                  >
+                    {filtro.label}
+                  </button>
+                ))}
+              </div>
+              {(statusFiltro !== 'todas' || busca.trim()) && (
+                <button
+                  className="dashboard-limpar-filtros"
+                  onClick={() => {
+                    setStatusFiltro('todas')
+                    setBusca('')
+                  }}
+                >
+                  Limpar filtros
+                </button>
+              )}
+            </div>
+
+            <p className="dashboard-resultados">
+              Exibindo {solicitacoesFiltradas.length} de {solicitacoes.length} solicitação(ões)
+            </p>
+
+            {solicitacoesFiltradas.length === 0 ? (
               <div className="dashboard-empty">
                 <FileText size={40} />
-                <p>Nenhuma solicitação cadastrada</p>
-                <button
-                  className="dashboard-btn-nova-inline"
-                  onClick={() => navigate('/nova-solicitacao')}
-                >
-                  Criar primeira solicitação
-                </button>
+                <p>
+                  {solicitacoes.length === 0
+                    ? 'Nenhuma solicitação cadastrada'
+                    : 'Nenhuma solicitação encontrada com os filtros atuais'}
+                </p>
+                {solicitacoes.length === 0 && (
+                  <button
+                    className="dashboard-btn-nova-inline"
+                    onClick={() => navigate('/nova-solicitacao')}
+                  >
+                    Criar primeira solicitação
+                  </button>
+                )}
               </div>
             ) : (
               <div className="dashboard-list">
-                {ultimasSolicitacoes.map((s) => (
+                {solicitacoesFiltradas.map((s) => (
                   <div
                     key={s.id}
                     className="dashboard-list-item"

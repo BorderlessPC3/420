@@ -6,7 +6,7 @@ import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
-import { analisarSolicitacaoComIA } from './services/aiService.js'
+import { analisarSolicitacaoComIA, getAIProviderInfo } from './services/aiService.js'
 import { 
   obterPromptAtivo, 
   processarPrompt,
@@ -36,6 +36,16 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Servidor rodando' })
+})
+
+// GET /api/ai/info - Informações sobre o provider de IA ativo
+app.get('/api/ai/info', (req, res) => {
+  try {
+    const info = getAIProviderInfo()
+    res.json(info)
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao obter informações do provider de IA' })
+  }
 })
 
 // Configurar multer para upload de arquivos
@@ -70,6 +80,21 @@ const upload = multer({
       cb(null, true)
     } else {
       cb(new Error('Tipo de arquivo não permitido'))
+    }
+  },
+})
+
+// Multer específico para PDFs apenas (usado na análise)
+const uploadPDFs = multer({
+  storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true)
+    } else {
+      cb(new Error('Apenas arquivos PDF são permitidos para análise'))
     }
   },
 })
@@ -168,10 +193,10 @@ app.post('/api/solicitacoes', upload.array('files'), async (req, res) => {
 })
 
 // POST /api/solicitacoes/:id/analisar - Analisar solicitação com IA
-app.post('/api/solicitacoes/:id/analisar', async (req, res) => {
+app.post('/api/solicitacoes/:id/analisar', uploadPDFs.array('novosPDFs'), async (req, res) => {
   try {
     const { id } = req.params
-    const { promptCustomizado } = req.body
+    const promptCustomizado = req.body.promptCustomizado
 
     // Buscar solicitação
     const solicitacao = await prisma.solicitacao.findUnique({
@@ -182,13 +207,36 @@ app.post('/api/solicitacoes/:id/analisar', async (req, res) => {
       return res.status(404).json({ error: 'Solicitação não encontrada' })
     }
 
-    // Obter caminhos dos arquivos
+    // Obter caminhos dos arquivos existentes
     const arquivosUrls = solicitacao.arquivos 
       ? JSON.parse(solicitacao.arquivos) as string[]
       : []
 
+    // Processar novos PDFs enviados (se houver)
+    const novosPDFsUrls: string[] = []
+    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+      novosPDFsUrls.push(
+        ...req.files.map(
+          (file: Express.Multer.File) =>
+            `http://localhost:${PORT}/uploads/${file.filename}`
+        )
+      )
+      
+      // Atualizar lista de arquivos da solicitação com os novos PDFs
+      const todosArquivos = [...arquivosUrls, ...novosPDFsUrls]
+      await prisma.solicitacao.update({
+        where: { id },
+        data: {
+          arquivos: JSON.stringify(todosArquivos),
+        },
+      })
+    }
+
+    // Combinar arquivos existentes com novos
+    const todosArquivosUrls = [...arquivosUrls, ...novosPDFsUrls]
+
     // Converter URLs para caminhos locais
-    const arquivosPaths = arquivosUrls.map(url => {
+    const arquivosPaths = todosArquivosUrls.map(url => {
       const filename = url.split('/').pop()
       return filename ? path.join(__dirname, '../uploads', filename) : null
     }).filter((p): p is string => p !== null && fs.existsSync(p))
@@ -202,8 +250,8 @@ app.post('/api/solicitacoes/:id/analisar', async (req, res) => {
         tipoObra: solicitacao.tipoObra,
         localizacao: solicitacao.localizacao,
         descricao: solicitacao.descricao,
-        arquivosInfo: arquivosUrls.length > 0 
-          ? `Foram anexados ${arquivosUrls.length} documento(s) para análise.`
+        arquivosInfo: todosArquivosUrls.length > 0 
+          ? `Foram anexados ${todosArquivosUrls.length} documento(s) para análise (${arquivosUrls.length} existentes${novosPDFsUrls.length > 0 ? ` + ${novosPDFsUrls.length} novos` : ''}).`
           : 'Nenhum documento foi anexado.'
       })
     }
@@ -224,8 +272,17 @@ app.post('/api/solicitacoes/:id/analisar', async (req, res) => {
       promptCustomizado: promptParaUsar,
     })
 
+    // Buscar solicitação atualizada para retornar
+    const solicitacaoAtualizada = await prisma.solicitacao.findUnique({
+      where: { id },
+    })
+
+    if (!solicitacaoAtualizada) {
+      return res.status(404).json({ error: 'Solicitação não encontrada após atualização' })
+    }
+
     // Salvar relatório no banco
-    const solicitacaoAtualizada = await prisma.solicitacao.update({
+    const solicitacaoFinal = await prisma.solicitacao.update({
       where: { id },
       data: {
         relatorioIA: relatorio,
@@ -236,9 +293,9 @@ app.post('/api/solicitacoes/:id/analisar', async (req, res) => {
     })
 
     res.json({
-      ...solicitacaoAtualizada,
-      arquivos: solicitacaoAtualizada.arquivos 
-        ? JSON.parse(solicitacaoAtualizada.arquivos) 
+      ...solicitacaoFinal,
+      arquivos: solicitacaoFinal.arquivos 
+        ? JSON.parse(solicitacaoFinal.arquivos) 
         : [],
     })
   } catch (error: any) {

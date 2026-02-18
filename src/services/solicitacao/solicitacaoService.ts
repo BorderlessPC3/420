@@ -157,15 +157,28 @@ export const deleteSolicitacao = async (id: string): Promise<void> => {
 // Analisar solicitação com IA
 export const analisarSolicitacaoComIA = async (
   id: string,
-  promptCustomizado?: string
+  promptCustomizado?: string,
+  novosPDFs?: File[]
 ): Promise<SolicitacaoWithFiles> => {
   try {
+    const formData = new FormData()
+    
+    // Adicionar prompt customizado se fornecido
+    if (promptCustomizado) {
+      formData.append('promptCustomizado', promptCustomizado)
+    }
+    
+    // Adicionar novos PDFs se fornecidos
+    if (novosPDFs && novosPDFs.length > 0) {
+      novosPDFs.forEach((file) => {
+        formData.append('novosPDFs', file)
+      })
+    }
+
     const response = await fetch(`${API_BASE_URL}/solicitacoes/${id}/analisar`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ promptCustomizado }),
+      body: formData,
+      // Não definir Content-Type - o browser define automaticamente com boundary para FormData
     })
 
     if (!response.ok) {

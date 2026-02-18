@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Plus, FileText, MapPin, Calendar, AlertCircle, Sparkles, Eye } from 'lucide-react'
 import { getAllSolicitacoes, analisarSolicitacaoComIA } from '../services/solicitacao/solicitacaoService'
 import type { SolicitacaoWithFiles } from '../models/Solicitacao.js'
@@ -9,16 +9,31 @@ import './Solicitacoes.css'
 
 export default function Solicitacoes() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoWithFiles[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [relatorioAberto, setRelatorioAberto] = useState<{ relatorio: string; titulo: string } | null>(null)
+  const [relatorioAberto, setRelatorioAberto] = useState<{
+    relatorio: string
+    titulo: string
+    solicitacaoInfo?: { localizacao?: string; tipoObra?: string; descricao?: string }
+  } | null>(null)
   const [modalReanaliseAberto, setModalReanaliseAberto] = useState<SolicitacaoWithFiles | null>(null)
   const [analisandoId, setAnalisandoId] = useState<string | null>(null)
 
   useEffect(() => {
     loadSolicitacoes()
   }, [])
+
+  const abrirAnaliseId = (location.state as { abrirAnaliseId?: string } | null)?.abrirAnaliseId
+  useEffect(() => {
+    if (!abrirAnaliseId || solicitacoes.length === 0) return
+    const sol = solicitacoes.find(s => s.id === abrirAnaliseId)
+    if (sol) {
+      setModalReanaliseAberto(sol)
+      navigate(location.pathname, { replace: true, state: {} })
+    }
+  }, [abrirAnaliseId, solicitacoes])
 
   const loadSolicitacoes = async () => {
     try {
@@ -87,16 +102,25 @@ export default function Solicitacoes() {
       setRelatorioAberto({
         relatorio: solicitacao.relatorioIA,
         titulo: solicitacao.titulo,
+        solicitacaoInfo: {
+          localizacao: solicitacao.localizacao,
+          tipoObra: solicitacao.tipoObra,
+          descricao: solicitacao.descricao,
+        },
       })
     }
   }
 
-  const handleReanalisar = async (promptCustomizado?: string) => {
+  const handleReanalisar = async (promptCustomizado?: string, novosPDFs?: File[]) => {
     if (!modalReanaliseAberto?.id) return
 
     setAnalisandoId(modalReanaliseAberto.id)
     try {
-      const resultado = await analisarSolicitacaoComIA(modalReanaliseAberto.id, promptCustomizado)
+      const resultado = await analisarSolicitacaoComIA(
+        modalReanaliseAberto.id, 
+        promptCustomizado,
+        novosPDFs
+      )
       
       // Atualizar a solicitação na lista
       setSolicitacoes((prev) =>
@@ -108,12 +132,17 @@ export default function Solicitacoes() {
         setRelatorioAberto({
           relatorio: resultado.relatorioIA,
           titulo: resultado.titulo,
+          solicitacaoInfo: {
+            localizacao: resultado.localizacao,
+            tipoObra: resultado.tipoObra,
+            descricao: resultado.descricao,
+          },
         })
       }
       
       setModalReanaliseAberto(null)
     } catch (error: any) {
-      console.error('Erro ao reanalisar:', error)
+      console.error('Erro ao analisar:', error)
       throw error
     } finally {
       setAnalisandoId(null)
@@ -232,7 +261,11 @@ export default function Solicitacoes() {
                   disabled={analisandoId === solicitacao.id}
                 >
                   <Sparkles size={16} />
-                  {analisandoId === solicitacao.id ? 'Analisando...' : 'Reanalisar'}
+                  {analisandoId === solicitacao.id 
+                    ? 'Analisando...' 
+                    : solicitacao.analisadoPorIA 
+                      ? 'Reanalisar' 
+                      : 'Primeira Análise'}
                 </button>
               </div>
             </div>
@@ -244,6 +277,7 @@ export default function Solicitacoes() {
         <RelatorioViewer
           relatorio={relatorioAberto.relatorio}
           titulo={relatorioAberto.titulo}
+          solicitacaoInfo={relatorioAberto.solicitacaoInfo}
           onClose={() => setRelatorioAberto(null)}
         />
       )}
@@ -251,6 +285,7 @@ export default function Solicitacoes() {
       {modalReanaliseAberto && (
         <ModalReanalise
           titulo={modalReanaliseAberto.titulo}
+          primeiraAnalise={!modalReanaliseAberto.analisadoPorIA}
           onConfirm={handleReanalisar}
           onClose={() => setModalReanaliseAberto(null)}
         />
