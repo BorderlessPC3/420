@@ -10,6 +10,9 @@ import {
   Plus,
   TrendingUp,
   ArrowRight,
+  Zap,
+  BarChart3,
+  Filter,
 } from 'lucide-react'
 import { getAllSolicitacoes } from '../services/solicitacao/solicitacaoService'
 import type { SolicitacaoWithFiles } from '../models/Solicitacao'
@@ -50,6 +53,31 @@ export default function Dashboard() {
   const aprovadas = solicitacoes.filter((s) => s.status === 'aprovada').length
   const rejeitadas = solicitacoes.filter((s) => s.status === 'rejeitada').length
   const analisadasIA = solicitacoes.filter((s) => s.analisadoPorIA).length
+
+  // Estatísticas avançadas
+  const totalAnalisadas = aprovadas + rejeitadas
+  const taxaAprovacao = totalAnalisadas > 0 
+    ? Math.round((aprovadas / totalAnalisadas) * 100) 
+    : 0
+  
+  // Solicitações pendentes há mais de 7 dias
+  const hoje = new Date()
+  const seteDiasAtras = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const pendentesAntigas = solicitacoes.filter((s) => {
+    if (s.status !== 'pendente' || !s.createdAt) return false
+    const dataCriacao = new Date(s.createdAt)
+    return dataCriacao < seteDiasAtras
+  }).length
+
+  // Distribuição para gráfico
+  const distribuicaoStatus = [
+    { label: 'Aprovadas', valor: aprovadas, cor: '#10b981' },
+    { label: 'Em Análise', valor: emAnalise, cor: '#f59e0b' },
+    { label: 'Pendentes', valor: pendentes, cor: '#6b7280' },
+    { label: 'Rejeitadas', valor: rejeitadas, cor: '#ef4444' },
+  ].filter((item) => item.valor > 0)
+
+  const maxValor = Math.max(...distribuicaoStatus.map((d) => d.valor), 1)
 
   const solicitacoesOrdenadas = [...solicitacoes]
     .sort((a, b) => {
@@ -205,6 +233,127 @@ export default function Dashboard() {
                 <span className="dashboard-card-value">{analisadasIA}</span>
                 <span className="dashboard-card-label">Analisadas por IA</span>
               </div>
+            </div>
+          </div>
+
+          {/* Estatísticas Avançadas e Ações Rápidas */}
+          <div className="dashboard-grid-actions">
+            {/* Gráfico de Distribuição */}
+            <div className="dashboard-section">
+              <div className="dashboard-section-header">
+                <h2>
+                  <BarChart3 size={20} />
+                  Distribuição por Status
+                </h2>
+              </div>
+              {distribuicaoStatus.length > 0 ? (
+                <div className="dashboard-chart">
+                  {distribuicaoStatus.map((item, index) => (
+                    <div key={index} className="dashboard-chart-item">
+                      <div className="dashboard-chart-label">
+                        <span
+                          className="dashboard-chart-dot"
+                          style={{ backgroundColor: item.cor }}
+                        />
+                        <span>{item.label}</span>
+                        <span className="dashboard-chart-value">{item.valor}</span>
+                      </div>
+                      <div className="dashboard-chart-bar-container">
+                        <div
+                          className="dashboard-chart-bar"
+                          style={{
+                            width: `${(item.valor / maxValor) * 100}%`,
+                            backgroundColor: item.cor,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="dashboard-chart-empty">Nenhum dado para exibir</p>
+              )}
+              {totalAnalisadas > 0 && (
+                <div className="dashboard-stats-footer">
+                  <div className="dashboard-stat-item">
+                    <span className="dashboard-stat-label">Taxa de Aprovação</span>
+                    <span className="dashboard-stat-value">{taxaAprovacao}%</span>
+                  </div>
+                  <div className="dashboard-stat-item">
+                    <span className="dashboard-stat-label">Total Analisadas</span>
+                    <span className="dashboard-stat-value">{totalAnalisadas}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Ações Rápidas */}
+            <div className="dashboard-section">
+              <div className="dashboard-section-header">
+                <h2>
+                  <Zap size={20} />
+                  Ações Rápidas
+                </h2>
+              </div>
+              <div className="dashboard-acoes-rapidas">
+                <button
+                  className="dashboard-acao-item"
+                  onClick={() => navigate('/nova-solicitacao')}
+                >
+                  <Plus size={20} />
+                  <div>
+                    <span className="dashboard-acao-titulo">Nova Solicitação</span>
+                    <span className="dashboard-acao-desc">Criar nova solicitação</span>
+                  </div>
+                </button>
+                <button
+                  className="dashboard-acao-item"
+                  onClick={() => navigate('/solicitacoes', { state: { filtroStatus: 'pendente' } })}
+                >
+                  <Clock size={20} />
+                  <div>
+                    <span className="dashboard-acao-titulo">Ver Pendentes</span>
+                    <span className="dashboard-acao-desc">
+                      {pendentes} solicitação(ões) aguardando
+                    </span>
+                  </div>
+                  {pendentesAntigas > 0 && (
+                    <span className="dashboard-acao-badge">{pendentesAntigas}</span>
+                  )}
+                </button>
+                <button
+                  className="dashboard-acao-item"
+                  onClick={() => navigate('/solicitacoes', { state: { filtroStatus: 'em_analise' } })}
+                >
+                  <TrendingUp size={20} />
+                  <div>
+                    <span className="dashboard-acao-titulo">Em Análise</span>
+                    <span className="dashboard-acao-desc">
+                      {emAnalise} solicitação(ões) sendo analisadas
+                    </span>
+                  </div>
+                </button>
+                <button
+                  className="dashboard-acao-item"
+                  onClick={() => navigate('/solicitacoes', { state: { filtroStatus: 'aprovada' } })}
+                >
+                  <CheckCircle size={20} />
+                  <div>
+                    <span className="dashboard-acao-titulo">Aprovadas</span>
+                    <span className="dashboard-acao-desc">
+                      {aprovadas} solicitação(ões) aprovadas
+                    </span>
+                  </div>
+                </button>
+              </div>
+              {pendentesAntigas > 0 && (
+                <div className="dashboard-alerta">
+                  <AlertCircle size={18} />
+                  <span>
+                    {pendentesAntigas} solicitação(ões) pendente(s) há mais de 7 dias
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 

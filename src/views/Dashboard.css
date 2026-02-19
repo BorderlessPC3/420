@@ -399,6 +399,183 @@
   color: #6b7280;
 }
 
+/* Grid de Ações e Gráfico */
+.dashboard-grid-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+/* Gráfico de Distribuição */
+.dashboard-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-chart-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dashboard-chart-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.dashboard-chart-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dashboard-chart-value {
+  margin-left: auto;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dashboard-chart-bar-container {
+  height: 8px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dashboard-chart-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.dashboard-chart-empty {
+  text-align: center;
+  padding: 32px;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.dashboard-stats-footer {
+  display: flex;
+  gap: 24px;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dashboard-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dashboard-stat-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.dashboard-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* Ações Rápidas */
+.dashboard-acoes-rapidas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dashboard-acao-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+
+.dashboard-acao-item:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-acao-item svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.dashboard-acao-item > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-acao-titulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dashboard-acao-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dashboard-acao-badge {
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.dashboard-alerta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.dashboard-alerta svg {
+  flex-shrink: 0;
+}
+
+.dashboard-section-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-section-header h2 svg {
+  color: #6b7280;
+}
+
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 16px;
@@ -427,5 +604,10 @@
   .dashboard-list-meta {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .dashboard-grid-actions {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 }

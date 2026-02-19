@@ -25,15 +25,18 @@ export default function Solicitacoes() {
     loadSolicitacoes()
   }, [])
 
-  const abrirAnaliseId = (location.state as { abrirAnaliseId?: string } | null)?.abrirAnaliseId
+  const locationState = location.state as { abrirAnaliseId?: string; filtroStatus?: string } | null
+  const abrirAnaliseId = locationState?.abrirAnaliseId
+  const filtroStatusInicial = locationState?.filtroStatus
+
   useEffect(() => {
     if (!abrirAnaliseId || solicitacoes.length === 0) return
     const sol = solicitacoes.find(s => s.id === abrirAnaliseId)
     if (sol) {
       setModalReanaliseAberto(sol)
-      navigate(location.pathname, { replace: true, state: {} })
+      navigate(location.pathname, { replace: true, state: filtroStatusInicial ? { filtroStatus: filtroStatusInicial } : {} })
     }
-  }, [abrirAnaliseId, solicitacoes])
+  }, [abrirAnaliseId, solicitacoes, navigate, location.pathname, filtroStatusInicial])
 
   const loadSolicitacoes = async () => {
     try {
