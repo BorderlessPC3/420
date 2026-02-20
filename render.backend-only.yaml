@@ -1,0 +1,20 @@
+# Deploy só do backend no Render (API apenas)
+# Use este arquivo se o frontend está em outro lugar (ex.: Vercel).
+# No Render: New → Blueprint → Conectar repositório → não use o render.yaml padrão;
+# ou crie Web Service manualmente e use os comandos abaixo.
+
+services:
+  - type: web
+    name: 420-rerond-api
+    runtime: node
+    buildCommand: npm install && npm run build:server
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: DATABASE_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

@@ -1,8 +1,35 @@
-# Deploy em uma vez (que dê certo)
+# Deploy
 
-O projeto está preparado para **um único deploy**: o mesmo servidor serve a API e o frontend. **Não use Vercel** para este projeto — o Vercel não roda servidor Express, só estático/funções serverless.
+O projeto pode ser deployado **tudo junto** (backend + frontend) ou **só o backend**.
 
-## Recomendado: Render (um deploy, uma URL)
+---
+
+## Só o backend (API)
+
+Use quando o frontend está em outro lugar (ex.: Vercel) ou você quer subir só a API.
+
+### Render (só backend)
+
+1. [render.com](https://render.com) → **New** → **Web Service**.
+2. Conecte o repositório.
+3. Configure:
+   - **Build Command:** `npm install && npm run build:server`
+   - **Start Command:** `npm run start`
+4. **Environment:** `DATABASE_URL`, `GROQ_API_KEY` ou `OPENAI_API_KEY`.
+5. **Deploy**.
+
+O servidor sobe só com a API (`/api/*` e `/uploads`). Não gera a pasta `dist/`, então não serve o frontend.
+
+Depois, no deploy do **frontend**, defina a variável de build:
+`VITE_API_BASE_URL=https://SEU-SERVICO.onrender.com/api`.
+
+---
+
+## Backend + frontend (um deploy, uma URL)
+
+**Não use Vercel** para o app completo — o Vercel não roda servidor Express.
+
+### Render (tudo junto)
 
 1. Crie conta em [render.com](https://render.com).
 2. **New** → **Web Service**.

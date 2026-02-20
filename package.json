@@ -9,6 +9,7 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
     "build": "npx prisma generate && vite build",
     "build:frontend": "vite build",
+    "build:server": "npx prisma generate",
     "typecheck": "tsc -b",
     "start": "tsx server/index.ts",
     "lint": "eslint .",
