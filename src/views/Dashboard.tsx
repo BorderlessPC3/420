@@ -12,7 +12,6 @@ import {
   ArrowRight,
   Zap,
   BarChart3,
-  Filter,
 } from 'lucide-react'
 import { getAllSolicitacoes } from '../services/solicitacao/solicitacaoService'
 import type { SolicitacaoWithFiles } from '../models/Solicitacao'

@@ -71,11 +71,25 @@ export function obterPromptAtivo(): PromptConfig {
 function getPromptPadrao(): PromptConfig {
   return {
     id: 'default',
-    nome: 'Checklist SysBaseInfra - IA Analista',
-    descricao: 'Análise de plantas/documentos com checklist padronizado (Documentação SysBaseInfra)',
-    prompt: `Você é um analista de projetos de infraestrutura rodoviária. Analise a solicitação e os documentos (PDFs) anexados e preencha o checklist de verificação.
+    nome: 'Comparação Formulário x PDFs - SysBaseInfra',
+    descricao: 'Compara os dados do formulário de solicitação com os PDFs anexados e indica ok ou informações não batem',
+    prompt: `Você é um analista de projetos de infraestrutura rodoviária. Sua tarefa é COMPARAR as informações preenchidas no formulário de solicitação com o conteúdo dos documentos (PDFs) anexados.
 
-INFORMAÇÕES DA SOLICITAÇÃO:
+DADOS DO FORMULÁRIO DE SOLICITAÇÃO (Overview Dados do cliente e Informações da Obra):
+- Cliente: {cliente}
+- Kilometragem: {kilometragem}
+- Nro Processo ERP: {nroProcessoErp}
+- Rodovia: {rodovia}
+- Nome Concessionária: {nomeConcessionaria}
+- Sentido: {sentido}
+- Ocupação: {ocupacao}
+- Município - Estado: {municipioEstado}
+- Ocupação Área: {ocupacaoArea}
+- Responsável Técnico: {responsavelTecnico}
+- Fase do Projeto: {faseProjeto}
+- Analista Responsável: {analistaResponsavel}
+- Memorial: {memorial}
+- Data de Recebimento: {dataRecebimento}
 - Título: {titulo}
 - Tipo de Obra: {tipoObra}
 - Localização: {localizacao}
@@ -85,9 +99,38 @@ DOCUMENTOS ANEXADOS:
 {arquivosInfo}
 
 INSTRUÇÕES:
-1. Extraia e valide as informações dos documentos/plantas.
-2. Para cada item do checklist, indique conformidade ou preencha com o valor encontrado.
-3. Retorne APENAS um objeto JSON válido, sem alterar os nomes dos campos. Use exatamente as chaves: LOCALIZACAO, KM_INICIO, KM_FIM, NOME_BR, COORDENADAS_GEORREFERENCIAIS_E, COORDENADAS_GEORREFERENCIAIS_N, TRACADO_FAIXA_DOMINIO, COTAS_TEXTOS_LEGIVEIS, VERIFICACAO_ESCALA, MEMORIAL, LARGURA_PISTA_DNIT, LEGENDAS, ANOTACAO_NOTA, SIGLA_ABREVIACAO, LOC_KM_PREFIXO, CARIMBO_CORRETO, LIMITE_PROPRIEDADE, DELIMITACAO_DOMINIO_NAO_EDIFICANTE, ART_PDF, QTD_FOLHAS.
+1. Compare cada informação do formulário com o que consta nos PDFs.
+2. Para cada item do checklist, verifique se os dados do formulário batem com os dados dos documentos.
+3. Use APENAS uma destas situações para cada campo:
+   - "ok" quando as informações do formulário correspondem ao que está nos PDFs.
+   - "informações não batem" quando há divergência, ausência ou inconsistência (adicione brevemente a divergência após ponto e vírgula, ex: "informações não batem; KM no formulário difere do PDF").
+4. Retorne APENAS um objeto JSON válido, sem alterar os nomes dos campos. Use exatamente as chaves abaixo.
+
+FORMATO DE SAÍDA - OBJETO JSON (use exatamente estes nomes de campos):
+{
+  "LOCALIZACAO": "ok" ou "informações não batem; [motivo]",
+  "KM_INICIO": "ok" ou "informações não batem; [motivo]",
+  "KM_FIM": "ok" ou "informações não batem; [motivo]",
+  "NOME_BR": "ok" ou "informações não batem; [motivo]",
+  "COORDENADAS_GEORREFERENCIAIS_E": "ok" ou "informações não batem; [motivo]",
+  "COORDENADAS_GEORREFERENCIAIS_N": "ok" ou "informações não batem; [motivo]",
+  "TRACADO_FAIXA_DOMINIO": "ok" ou "informações não batem; [motivo]",
+  "COTAS_TEXTOS_LEGIVEIS": "ok" ou "informações não batem; [motivo]",
+  "VERIFICACAO_ESCALA": "ok" ou "informações não batem; [motivo]",
+  "MEMORIAL": "ok" ou "informações não batem; [motivo]",
+  "LARGURA_PISTA_DNIT": "ok" ou "informações não batem; [motivo]",
+  "LEGENDAS": "ok" ou "informações não batem; [motivo]",
+  "ANOTACAO_NOTA": "ok" ou "informações não batem; [motivo]",
+  "SIGLA_ABREVIACAO": "ok" ou "informações não batem; [motivo]",
+  "LOC_KM_PREFIXO": "ok" ou "informações não batem; [motivo]",
+  "CARIMBO_CORRETO": "ok" ou "informações não batem; [motivo]",
+  "LIMITE_PROPRIEDADE": "ok" ou "informações não batem; [motivo]",
+  "DELIMITACAO_DOMINIO_NAO_EDIFICANTE": "ok" ou "informações não batem; [motivo]",
+  "ART_PDF": "ok" ou "informações não batem; [motivo]",
+  "QTD_FOLHAS": "ok" ou "informações não batem; [motivo]"
+}
+
+Mapeamento sugerido: Localização do formulário → LOCALIZACAO; Kilometragem → KM_INICIO/KM_FIM; Rodovia → NOME_BR; Memorial → MEMORIAL. Para itens sem correspondência direta no formulário, verifique a presença e consistência nos documentos.
 
 Responda somente com o JSON, sem texto antes ou depois.`,
     ativo: true

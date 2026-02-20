@@ -12,6 +12,21 @@ export interface Solicitacao {
   createdAt?: Date
   updatedAt?: Date
   createdBy?: string
+  // Overview Dados do cliente
+  cliente?: string
+  kilometragem?: string
+  nroProcessoErp?: string
+  rodovia?: string
+  nomeConcessionaria?: string
+  sentido?: string
+  ocupacao?: string
+  municipioEstado?: string
+  ocupacaoArea?: string
+  responsavelTecnico?: string
+  faseProjeto?: string
+  analistaResponsavel?: string
+  memorial?: string
+  dataRecebimento?: string
 }
 
 export interface SolicitacaoWithFiles extends Solicitacao {

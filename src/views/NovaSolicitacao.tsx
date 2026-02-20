@@ -11,7 +11,21 @@ export default function NovaSolicitacao() {
     titulo: '',
     tipoObra: '',
     localizacao: '',
-    descricao: ''
+    descricao: '',
+    cliente: '',
+    kilometragem: '',
+    nroProcessoErp: '',
+    rodovia: '',
+    nomeConcessionaria: '',
+    sentido: '',
+    ocupacao: '',
+    municipioEstado: '',
+    ocupacaoArea: '',
+    responsavelTecnico: '',
+    faseProjeto: '',
+    analistaResponsavel: '',
+    memorial: '',
+    dataRecebimento: '',
   })
   const [files, setFiles] = useState<File[]>([])
   const [isDragging, setIsDragging] = useState(false)
@@ -86,6 +100,20 @@ export default function NovaSolicitacao() {
           localizacao: formData.localizacao,
           descricao: formData.descricao,
           status: 'pendente',
+          cliente: formData.cliente || undefined,
+          kilometragem: formData.kilometragem || undefined,
+          nroProcessoErp: formData.nroProcessoErp || undefined,
+          rodovia: formData.rodovia || undefined,
+          nomeConcessionaria: formData.nomeConcessionaria || undefined,
+          sentido: formData.sentido || undefined,
+          ocupacao: formData.ocupacao || undefined,
+          municipioEstado: formData.municipioEstado || undefined,
+          ocupacaoArea: formData.ocupacaoArea || undefined,
+          responsavelTecnico: formData.responsavelTecnico || undefined,
+          faseProjeto: formData.faseProjeto || undefined,
+          analistaResponsavel: formData.analistaResponsavel || undefined,
+          memorial: formData.memorial || undefined,
+          dataRecebimento: formData.dataRecebimento || undefined,
         },
         files
       )
@@ -107,6 +135,187 @@ export default function NovaSolicitacao() {
   return (
     <div className="nova-solicitacao-container">
       <form onSubmit={handleSubmit} className="nova-solicitacao-form">
+        {/* Seção Overview Dados do cliente */}
+        <div className="form-section">
+          <h2 className="section-title">Overview Dados do cliente</h2>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="cliente">Cliente</label>
+              <input
+                type="text"
+                id="cliente"
+                name="cliente"
+                value={formData.cliente}
+                onChange={handleInputChange}
+                placeholder="Ex: OHR TELECOM EIRELI"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="kilometragem">Kilometragem</label>
+              <input
+                type="text"
+                id="kilometragem"
+                name="kilometragem"
+                value={formData.kilometragem}
+                onChange={handleInputChange}
+                placeholder="Ex: km 23+880 a km 68+503"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="nroProcessoErp">Nro Processo - ERP</label>
+              <input
+                type="text"
+                id="nroProcessoErp"
+                name="nroProcessoErp"
+                value={formData.nroProcessoErp}
+                onChange={handleInputChange}
+                placeholder="Ex: 20240301-0001"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="rodovia">Rodovia</label>
+              <input
+                type="text"
+                id="rodovia"
+                name="rodovia"
+                value={formData.rodovia}
+                onChange={handleInputChange}
+                placeholder="Ex: BR-277"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="nomeConcessionaria">Nome Concessionária</label>
+              <input
+                type="text"
+                id="nomeConcessionaria"
+                name="nomeConcessionaria"
+                value={formData.nomeConcessionaria}
+                onChange={handleInputChange}
+                placeholder="Nome da concessionária"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="sentido">Sentido</label>
+              <input
+                type="text"
+                id="sentido"
+                name="sentido"
+                value={formData.sentido}
+                onChange={handleInputChange}
+                placeholder="Ex: C/D"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="ocupacao">Ocupação (Classificação)</label>
+              <input
+                type="text"
+                id="ocupacao"
+                name="ocupacao"
+                value={formData.ocupacao}
+                onChange={handleInputChange}
+                placeholder="Ex: DIVERSOS"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="municipioEstado">Município - Estado</label>
+              <input
+                type="text"
+                id="municipioEstado"
+                name="municipioEstado"
+                value={formData.municipioEstado}
+                onChange={handleInputChange}
+                placeholder="Ex: Curitiba - PR"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="ocupacaoArea">Ocupação Área</label>
+              <input
+                type="text"
+                id="ocupacaoArea"
+                name="ocupacaoArea"
+                value={formData.ocupacaoArea}
+                onChange={handleInputChange}
+                placeholder="Ex: >10000 m²"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="responsavelTecnico">Responsável Técnico</label>
+              <input
+                type="text"
+                id="responsavelTecnico"
+                name="responsavelTecnico"
+                value={formData.responsavelTecnico}
+                onChange={handleInputChange}
+                placeholder="Ex: Rerond Goulart Carvalho"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="faseProjeto">Fase do Projeto</label>
+              <input
+                type="text"
+                id="faseProjeto"
+                name="faseProjeto"
+                value={formData.faseProjeto}
+                onChange={handleInputChange}
+                placeholder="Ex: 1"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="analistaResponsavel">Analista Responsável</label>
+              <input
+                type="text"
+                id="analistaResponsavel"
+                name="analistaResponsavel"
+                value={formData.analistaResponsavel}
+                onChange={handleInputChange}
+                placeholder="Ex: andreia_admin"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="memorial">Memorial</label>
+              <select
+                id="memorial"
+                name="memorial"
+                value={formData.memorial}
+                onChange={handleInputChange}
+              >
+                <option value="">Selecione...</option>
+                <option value="sim">Sim</option>
+                <option value="nao">Não</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="dataRecebimento">Data de Recebimento</label>
+              <input
+                type="date"
+                id="dataRecebimento"
+                name="dataRecebimento"
+                value={formData.dataRecebimento}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Seção Informações da Obra */}
         <div className="form-section">
           <h2 className="section-title">Informações da Obra</h2>
@@ -225,6 +434,12 @@ export default function NovaSolicitacao() {
             </div>
           )}
         </div>
+
+        {error && (
+          <div className="form-error" role="alert">
+            {error}
+          </div>
+        )}
 
         {/* Botões de Ação */}
         <div className="form-actions">

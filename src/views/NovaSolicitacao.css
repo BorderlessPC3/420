@@ -187,6 +187,16 @@
   color: #333333;
 }
 
+.form-error {
+  padding: 12px;
+  margin-bottom: 16px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

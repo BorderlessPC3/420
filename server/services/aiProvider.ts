@@ -1,6 +1,6 @@
 /**
  * Provider de IA - Suporta Groq e OpenAI
- * Permite trocar facilmente entre provedores via variáveis de ambiente
+ * Prioridade: Groq se GROQ_API_KEY configurado, senão OpenAI
  */
 
 export type AIProvider = 'groq' | 'openai'
@@ -15,15 +15,14 @@ export interface AIConfig {
  * Detecta qual provider usar baseado nas variáveis de ambiente
  */
 export function detectAIProvider(): AIProvider {
-  // Prioridade: Groq primeiro (para desenvolvimento inicial)
   if (process.env.GROQ_API_KEY) {
     return 'groq'
   }
-  
+
   if (process.env.OPENAI_API_KEY) {
     return 'openai'
   }
-  
+
   throw new Error(
     'Nenhuma chave de API configurada. Configure GROQ_API_KEY ou OPENAI_API_KEY no arquivo .env'
   )
@@ -34,7 +33,7 @@ export function detectAIProvider(): AIProvider {
  */
 export function getAIConfig(): AIConfig {
   const provider = detectAIProvider()
-  
+
   if (provider === 'groq') {
     return {
       provider: 'groq',
@@ -42,7 +41,7 @@ export function getAIConfig(): AIConfig {
       model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
     }
   }
-  
+
   return {
     provider: 'openai',
     apiKey: process.env.OPENAI_API_KEY!,

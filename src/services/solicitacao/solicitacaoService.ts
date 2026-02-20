@@ -15,12 +15,23 @@ export const createSolicitacao = async (
     formData.append('tipoObra', solicitacao.tipoObra)
     formData.append('localizacao', solicitacao.localizacao)
     formData.append('descricao', solicitacao.descricao)
-    if (solicitacao.status) {
-      formData.append('status', solicitacao.status)
-    }
-    if (solicitacao.createdBy) {
-      formData.append('createdBy', solicitacao.createdBy)
-    }
+    if (solicitacao.status) formData.append('status', solicitacao.status)
+    if (solicitacao.createdBy) formData.append('createdBy', solicitacao.createdBy)
+    // Overview Dados do cliente
+    if (solicitacao.cliente) formData.append('cliente', solicitacao.cliente)
+    if (solicitacao.kilometragem) formData.append('kilometragem', solicitacao.kilometragem)
+    if (solicitacao.nroProcessoErp) formData.append('nroProcessoErp', solicitacao.nroProcessoErp)
+    if (solicitacao.rodovia) formData.append('rodovia', solicitacao.rodovia)
+    if (solicitacao.nomeConcessionaria) formData.append('nomeConcessionaria', solicitacao.nomeConcessionaria)
+    if (solicitacao.sentido) formData.append('sentido', solicitacao.sentido)
+    if (solicitacao.ocupacao) formData.append('ocupacao', solicitacao.ocupacao)
+    if (solicitacao.municipioEstado) formData.append('municipioEstado', solicitacao.municipioEstado)
+    if (solicitacao.ocupacaoArea) formData.append('ocupacaoArea', solicitacao.ocupacaoArea)
+    if (solicitacao.responsavelTecnico) formData.append('responsavelTecnico', solicitacao.responsavelTecnico)
+    if (solicitacao.faseProjeto) formData.append('faseProjeto', solicitacao.faseProjeto)
+    if (solicitacao.analistaResponsavel) formData.append('analistaResponsavel', solicitacao.analistaResponsavel)
+    if (solicitacao.memorial) formData.append('memorial', solicitacao.memorial)
+    if (solicitacao.dataRecebimento) formData.append('dataRecebimento', solicitacao.dataRecebimento)
 
     // Adicionar arquivos
     files.forEach((file) => {
@@ -182,8 +193,9 @@ export const analisarSolicitacaoComIA = async (
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Erro ao analisar solicitação' }))
-      throw new Error(error.error || error.message || 'Erro ao analisar solicitação')
+      const errorData = await response.json().catch(() => ({ error: 'Erro ao analisar solicitação' }))
+      const msg = errorData.message || errorData.error || 'Erro ao analisar solicitação'
+      throw new Error(msg)
     }
 
     const data = await response.json()

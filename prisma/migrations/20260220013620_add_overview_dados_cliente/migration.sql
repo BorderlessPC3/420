@@ -1,0 +1,15 @@
+-- AlterTable
+ALTER TABLE "solicitacoes" ADD COLUMN     "analistaResponsavel" TEXT,
+ADD COLUMN     "cliente" TEXT,
+ADD COLUMN     "dataRecebimento" TEXT,
+ADD COLUMN     "faseProjeto" TEXT,
+ADD COLUMN     "kilometragem" TEXT,
+ADD COLUMN     "memorial" TEXT,
+ADD COLUMN     "municipioEstado" TEXT,
+ADD COLUMN     "nomeConcessionaria" TEXT,
+ADD COLUMN     "nroProcessoErp" TEXT,
+ADD COLUMN     "ocupacao" TEXT,
+ADD COLUMN     "ocupacaoArea" TEXT,
+ADD COLUMN     "responsavelTecnico" TEXT,
+ADD COLUMN     "rodovia" TEXT,
+ADD COLUMN     "sentido" TEXT;

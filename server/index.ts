@@ -150,8 +150,28 @@ app.get('/api/solicitacoes/:id', async (req, res) => {
 // POST /api/solicitacoes - Criar nova solicitação
 app.post('/api/solicitacoes', upload.array('files'), async (req, res) => {
   try {
-    const { titulo, tipoObra, localizacao, descricao, status, createdBy } =
-      req.body
+    const {
+      titulo,
+      tipoObra,
+      localizacao,
+      descricao,
+      status,
+      createdBy,
+      cliente,
+      kilometragem,
+      nroProcessoErp,
+      rodovia,
+      nomeConcessionaria,
+      sentido,
+      ocupacao,
+      municipioEstado,
+      ocupacaoArea,
+      responsavelTecnico,
+      faseProjeto,
+      analistaResponsavel,
+      memorial,
+      dataRecebimento,
+    } = req.body
 
     if (!titulo || !tipoObra || !localizacao || !descricao) {
       return res.status(400).json({
@@ -179,6 +199,20 @@ app.post('/api/solicitacoes', upload.array('files'), async (req, res) => {
         status: status || 'pendente',
         arquivos: JSON.stringify(arquivosUrls),
         createdBy: createdBy || null,
+        cliente: cliente || null,
+        kilometragem: kilometragem || null,
+        nroProcessoErp: nroProcessoErp || null,
+        rodovia: rodovia || null,
+        nomeConcessionaria: nomeConcessionaria || null,
+        sentido: sentido || null,
+        ocupacao: ocupacao || null,
+        municipioEstado: municipioEstado || null,
+        ocupacaoArea: ocupacaoArea || null,
+        responsavelTecnico: responsavelTecnico || null,
+        faseProjeto: faseProjeto || null,
+        analistaResponsavel: analistaResponsavel || null,
+        memorial: memorial || null,
+        dataRecebimento: dataRecebimento || null,
       },
     })
 
@@ -242,18 +276,34 @@ app.post('/api/solicitacoes/:id/analisar', uploadPDFs.array('novosPDFs'), async 
     }).filter((p): p is string => p !== null && fs.existsSync(p))
 
     // Obter prompt (customizado ou padrão)
+    const variaveisPrompt: Record<string, string> = {
+      titulo: solicitacao.titulo,
+      tipoObra: solicitacao.tipoObra,
+      localizacao: solicitacao.localizacao,
+      descricao: solicitacao.descricao,
+      cliente: solicitacao.cliente || 'não informado',
+      kilometragem: solicitacao.kilometragem || 'não informado',
+      nroProcessoErp: solicitacao.nroProcessoErp || 'não informado',
+      rodovia: solicitacao.rodovia || 'não informado',
+      nomeConcessionaria: solicitacao.nomeConcessionaria || 'não informado',
+      sentido: solicitacao.sentido || 'não informado',
+      ocupacao: solicitacao.ocupacao || 'não informado',
+      municipioEstado: solicitacao.municipioEstado || 'não informado',
+      ocupacaoArea: solicitacao.ocupacaoArea || 'não informado',
+      responsavelTecnico: solicitacao.responsavelTecnico || 'não informado',
+      faseProjeto: solicitacao.faseProjeto || 'não informado',
+      analistaResponsavel: solicitacao.analistaResponsavel || 'não informado',
+      memorial: solicitacao.memorial || 'não informado',
+      dataRecebimento: solicitacao.dataRecebimento || 'não informado',
+      arquivosInfo: todosArquivosUrls.length > 0
+        ? `Foram anexados ${todosArquivosUrls.length} documento(s) para análise (${arquivosUrls.length} existentes${novosPDFsUrls.length > 0 ? ` + ${novosPDFsUrls.length} novos` : ''}).`
+        : 'Nenhum documento foi anexado.',
+    }
+
     let promptParaUsar = promptCustomizado
     if (!promptParaUsar) {
       const promptAtivo = obterPromptAtivo()
-      promptParaUsar = processarPrompt(promptAtivo.prompt, {
-        titulo: solicitacao.titulo,
-        tipoObra: solicitacao.tipoObra,
-        localizacao: solicitacao.localizacao,
-        descricao: solicitacao.descricao,
-        arquivosInfo: todosArquivosUrls.length > 0 
-          ? `Foram anexados ${todosArquivosUrls.length} documento(s) para análise (${arquivosUrls.length} existentes${novosPDFsUrls.length > 0 ? ` + ${novosPDFsUrls.length} novos` : ''}).`
-          : 'Nenhum documento foi anexado.'
-      })
+      promptParaUsar = processarPrompt(promptAtivo.prompt, variaveisPrompt)
     }
 
     // Atualizar status para "em_analise"
@@ -268,6 +318,20 @@ app.post('/api/solicitacoes/:id/analisar', uploadPDFs.array('novosPDFs'), async 
       tipoObra: solicitacao.tipoObra,
       localizacao: solicitacao.localizacao,
       descricao: solicitacao.descricao,
+      cliente: solicitacao.cliente ?? undefined,
+      kilometragem: solicitacao.kilometragem ?? undefined,
+      nroProcessoErp: solicitacao.nroProcessoErp ?? undefined,
+      rodovia: solicitacao.rodovia ?? undefined,
+      nomeConcessionaria: solicitacao.nomeConcessionaria ?? undefined,
+      sentido: solicitacao.sentido ?? undefined,
+      ocupacao: solicitacao.ocupacao ?? undefined,
+      municipioEstado: solicitacao.municipioEstado ?? undefined,
+      ocupacaoArea: solicitacao.ocupacaoArea ?? undefined,
+      responsavelTecnico: solicitacao.responsavelTecnico ?? undefined,
+      faseProjeto: solicitacao.faseProjeto ?? undefined,
+      analistaResponsavel: solicitacao.analistaResponsavel ?? undefined,
+      memorial: solicitacao.memorial ?? undefined,
+      dataRecebimento: solicitacao.dataRecebimento ?? undefined,
       arquivosPaths,
       promptCustomizado: promptParaUsar,
     })
@@ -299,7 +363,9 @@ app.post('/api/solicitacoes/:id/analisar', uploadPDFs.array('novosPDFs'), async 
         : [],
     })
   } catch (error: any) {
-    console.error('Erro ao analisar solicitação:', error)
+    const errMsg = error?.message || String(error)
+    console.error('Erro ao analisar solicitação:', errMsg)
+    console.error('Stack:', error?.stack)
     
     // Atualizar status de volta para pendente em caso de erro
     try {
@@ -313,7 +379,7 @@ app.post('/api/solicitacoes/:id/analisar', uploadPDFs.array('novosPDFs'), async 
 
     res.status(500).json({ 
       error: 'Erro ao analisar solicitação',
-      message: error.message 
+      message: errMsg 
     })
   }
 })

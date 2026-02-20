@@ -153,6 +153,11 @@
   font-weight: 600;
 }
 
+.situacao-nao-batem {
+  color: #dc2626;
+  font-weight: 600;
+}
+
 .situacao-outro {
   color: #92400e;
   font-weight: 500;

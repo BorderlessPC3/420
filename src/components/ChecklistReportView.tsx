@@ -1,4 +1,4 @@
-import './ChecklistReportView.css'
+﻿import './ChecklistReportView.css'
 
 const CHECKLIST_LABELS: Record<string, string> = {
   LOCALIZACAO: 'Localização do acesso conforme SRE vigente',
@@ -38,6 +38,11 @@ function isAprovado(val: string): boolean {
   return v === 'aprovado' || v === 'conforme' || v === 'ok' || v === 'sim' || v === 'presente'
 }
 
+function isInformacoesNaoBatem(val: string): boolean {
+  if (!val || typeof val !== 'string') return false
+  return val.toLowerCase().trim().startsWith('informações não batem')
+}
+
 export interface ChecklistReportViewProps {
   data: Record<string, string>
   titulo: string
@@ -56,12 +61,14 @@ export default function ChecklistReportView({
   const rows = CHECKLIST_ORDER.filter((key) => key in data).map((key, index) => {
     const value = String(data[key] ?? '').trim()
     const aprovado = isAprovado(value)
-    const situacao = aprovado ? 'Aprovado' : (value || '—')
+    const naoBatem = isInformacoesNaoBatem(value)
+    const situacao = aprovado ? 'OK' : (value || '—')
     return {
       item: index + 1,
       documento: CHECKLIST_LABELS[key] || key,
       situacao,
       aprovado,
+      naoBatem,
     }
   })
 
@@ -107,8 +114,8 @@ export default function ChecklistReportView({
       <div className="checklist-report-nota">
         <span className="checklist-report-nota-label">Nota:</span>
         <p>
-          Itens analisados automaticamente pela IA com base nos documentos e plantas anexados.
-          Situação “Aprovado” indica conformidade identificada na análise.
+          Itens analisados automaticamente pela IA. Comparação entre os dados do formulário e os PDFs anexados.
+          OK = informações batem; "informações não batem" = divergência entre formulário e documentos.
         </p>
       </div>
 
@@ -126,7 +133,7 @@ export default function ChecklistReportView({
               <td className="col-item">{row.item}</td>
               <td className="col-documento">{row.documento}</td>
               <td className="col-situacao">
-                <span className={row.aprovado ? 'situacao-aprovado' : 'situacao-outro'}>
+                <span className={row.aprovado ? 'situacao-aprovado' : row.naoBatem ? 'situacao-nao-batem' : 'situacao-outro'}>
                   {row.situacao}
                 </span>
               </td>

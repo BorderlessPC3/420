@@ -11,19 +11,34 @@ datasource db {
 }
 
 model Solicitacao {
-  id              String   @id @default(cuid())
-  titulo          String
-  tipoObra        String
-  localizacao     String
-  descricao       String
-  status          String   @default("pendente")
-  arquivos        String?  // JSON array de URLs dos arquivos
-  relatorioIA     String?  // Relatório gerado pela IA
-  analisadoPorIA  Boolean  @default(false)
-  analisadoEm     DateTime?
-  createdBy       String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                   String   @id @default(cuid())
+  titulo               String
+  tipoObra             String
+  localizacao          String
+  descricao            String
+  status               String   @default("pendente")
+  arquivos             String?  // JSON array de URLs dos arquivos
+  relatorioIA          String?  // Relatório gerado pela IA
+  analisadoPorIA       Boolean  @default(false)
+  analisadoEm          DateTime?
+  createdBy            String?
+  // Overview Dados do cliente
+  cliente              String?
+  kilometragem         String?
+  nroProcessoErp       String?
+  rodovia              String?
+  nomeConcessionaria   String?
+  sentido              String?
+  ocupacao             String?
+  municipioEstado      String?
+  ocupacaoArea         String?
+  responsavelTecnico   String?
+  faseProjeto          String?
+  analistaResponsavel  String?
+  memorial             String?
+  dataRecebimento      String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   @@map("solicitacoes")
 }

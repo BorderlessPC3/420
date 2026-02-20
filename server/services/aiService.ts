@@ -1,6 +1,5 @@
 /**
- * Serviço de análise de solicitações com IA
- * Suporta Groq (padrão inicial) e OpenAI (migração futura)
+ * Serviço de análise de solicitações com IA (Groq ou OpenAI)
  */
 import fs from 'fs'
 import path from 'path'
@@ -20,7 +19,6 @@ function initializeAI() {
 
   try {
     const config = getAIConfig()
-    
     if (config.provider === 'groq') {
       initializeGroq(config.apiKey)
       console.log(`✅ Groq inicializado com modelo: ${config.model}`)
@@ -28,12 +26,10 @@ function initializeAI() {
       initializeOpenAI(config.apiKey)
       console.log(`✅ OpenAI inicializado com modelo: ${config.model}`)
     }
-    
     aiInitialized = true
   } catch (error: any) {
-    // Não bloquear o servidor se a IA não estiver configurada
     console.warn(`⚠️  IA não configurada: ${error.message}`)
-    console.warn(`⚠️  A funcionalidade de análise com IA não estará disponível até configurar GROQ_API_KEY ou OPENAI_API_KEY`)
+    console.warn(`⚠️  Configure GROQ_API_KEY ou OPENAI_API_KEY no arquivo .env`)
   }
 }
 
@@ -51,6 +47,20 @@ export interface AnaliseSolicitacaoParams {
   descricao: string
   arquivosPaths: string[]
   promptCustomizado?: string
+  cliente?: string
+  kilometragem?: string
+  nroProcessoErp?: string
+  rodovia?: string
+  nomeConcessionaria?: string
+  sentido?: string
+  ocupacao?: string
+  municipioEstado?: string
+  ocupacaoArea?: string
+  responsavelTecnico?: string
+  faseProjeto?: string
+  analistaResponsavel?: string
+  memorial?: string
+  dataRecebimento?: string
 }
 
 /**
@@ -91,14 +101,29 @@ async function processarPDFs(arquivosPaths: string[]): Promise<string[]> {
   return textosPDFs
 }
 
+const v = (s: string | undefined) => s ?? 'não informado'
+
 /**
- * Gera o prompt padrão para análise de solicitações
- * Esta função é usada apenas como fallback se não houver prompt customizado
+ * Gera o prompt padrão para análise de solicitações (comparação formulário x PDFs)
  */
 function gerarPromptPadrao(params: AnaliseSolicitacaoParams): string {
-  return `Você é um analista de projetos de infraestrutura rodoviária. Analise a solicitação e os documentos (PDFs) anexados e preencha o checklist de verificação.
+  return `Você é um analista de projetos de infraestrutura rodoviária. Sua tarefa é COMPARAR as informações preenchidas no formulário com o conteúdo dos PDFs anexados.
 
-INFORMAÇÕES DA SOLICITAÇÃO:
+DADOS DO FORMULÁRIO:
+- Cliente: ${v(params.cliente)}
+- Kilometragem: ${v(params.kilometragem)}
+- Nro Processo ERP: ${v(params.nroProcessoErp)}
+- Rodovia: ${v(params.rodovia)}
+- Nome Concessionária: ${v(params.nomeConcessionaria)}
+- Sentido: ${v(params.sentido)}
+- Ocupação: ${v(params.ocupacao)}
+- Município - Estado: ${v(params.municipioEstado)}
+- Ocupação Área: ${v(params.ocupacaoArea)}
+- Responsável Técnico: ${v(params.responsavelTecnico)}
+- Fase do Projeto: ${v(params.faseProjeto)}
+- Analista Responsável: ${v(params.analistaResponsavel)}
+- Memorial: ${v(params.memorial)}
+- Data de Recebimento: ${v(params.dataRecebimento)}
 - Título: ${params.titulo}
 - Tipo de Obra: ${params.tipoObra}
 - Localização: ${params.localizacao}
@@ -108,35 +133,11 @@ DOCUMENTOS ANEXADOS:
 ${params.arquivosPaths.length > 0 ? `Foram anexados ${params.arquivosPaths.length} documento(s) para análise.` : 'Nenhum documento foi anexado.'}
 
 INSTRUÇÕES:
-1. Extraia e valide as informações dos documentos/plantas.
-2. Para cada item do checklist, indique conformidade ou preencha com o valor encontrado (texto ou número conforme o campo).
-3. Retorne APENAS um objeto JSON válido, sem alterar os nomes dos campos. Use exatamente as chaves abaixo. Para itens conformes use o valor "Aprovado". Para não conformidades use "Não conformidade" ou descreva. Para dados (KM, BR, coordenadas) preencha com o valor encontrado.
+1. Compare cada informação do formulário com o que consta nos PDFs.
+2. Para cada item do checklist, use "ok" quando batem ou "informações não batem; [motivo]" quando há divergência.
+3. Retorne APENAS um objeto JSON válido com as chaves: LOCALIZACAO, KM_INICIO, KM_FIM, NOME_BR, COORDENADAS_GEORREFERENCIAIS_E, COORDENADAS_GEORREFERENCIAIS_N, TRACADO_FAIXA_DOMINIO, COTAS_TEXTOS_LEGIVEIS, VERIFICACAO_ESCALA, MEMORIAL, LARGURA_PISTA_DNIT, LEGENDAS, ANOTACAO_NOTA, SIGLA_ABREVIACAO, LOC_KM_PREFIXO, CARIMBO_CORRETO, LIMITE_PROPRIEDADE, DELIMITACAO_DOMINIO_NAO_EDIFICANTE, ART_PDF, QTD_FOLHAS.
 
-FORMATO DE SAÍDA - OBJETO JSON (use exatamente estes nomes de campos):
-{
-  "LOCALIZACAO": "texto ou descrição",
-  "KM_INICIO": "valor ou texto",
-  "KM_FIM": "valor ou texto",
-  "NOME_BR": "nome da BR",
-  "COORDENADAS_GEORREFERENCIAIS_E": "valor",
-  "COORDENADAS_GEORREFERENCIAIS_N": "valor",
-  "TRACADO_FAIXA_DOMINIO": "conforme/não conforme ou observação",
-  "COTAS_TEXTOS_LEGIVEIS": "conforme/não conforme ou observação",
-  "VERIFICACAO_ESCALA": "conforme/não conforme ou observação",
-  "MEMORIAL": "conforme/não conforme ou observação",
-  "LARGURA_PISTA_DNIT": "valor ou observação",
-  "LEGENDAS": "conforme/não conforme ou observação",
-  "ANOTACAO_NOTA": "conforme/não conforme ou observação",
-  "SIGLA_ABREVIACAO": "conforme/não conforme ou observação",
-  "LOC_KM_PREFIXO": "conforme/não conforme ou observação",
-  "CARIMBO_CORRETO": "conforme/não conforme ou observação",
-  "LIMITE_PROPRIEDADE": "conforme/não conforme ou observação",
-  "DELIMITACAO_DOMINIO_NAO_EDIFICANTE": "conforme/não conforme ou observação",
-  "ART_PDF": "conforme/não conforme ou observação",
-  "QTD_FOLHAS": "número ou texto"
-}
-
-Responda somente com o JSON, sem texto antes ou depois. Se algum dado não estiver disponível no documento, use "não informado" ou "não aplicável" no valor.`
+Responda somente com o JSON, sem texto antes ou depois.`
 }
 
 /**
@@ -190,18 +191,16 @@ Por favor, gere o relatório de análise conforme as instruções acima.`
     ]
 
     // Chamar API do provider selecionado
-    let completion
-    if (provider === 'groq') {
-      completion = await groqChatCompletion(messages, config.model, {
-        temperature: 0.7,
-        maxTokens: 4000,
-      })
-    } else {
-      completion = await openaiChatCompletion(messages, config.model, {
-        temperature: 0.7,
-        maxTokens: 4000,
-      })
-    }
+    const completion =
+      provider === 'groq'
+        ? await groqChatCompletion(messages, config.model, {
+            temperature: 0.7,
+            maxTokens: 4000,
+          })
+        : await openaiChatCompletion(messages, config.model, {
+            temperature: 0.7,
+            maxTokens: 4000,
+          })
 
     console.log(`✅ Análise concluída usando ${completion.provider} (modelo: ${completion.model})`)
 
