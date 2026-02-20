@@ -185,7 +185,7 @@ app.post('/api/solicitacoes', upload.array('files'), async (req, res) => {
       arquivosUrls.push(
         ...req.files.map(
           (file: Express.Multer.File) =>
-            `http://localhost:${PORT}/uploads/${file.filename}`
+            `/uploads/${file.filename}`
         )
       )
     }
@@ -252,7 +252,7 @@ app.post('/api/solicitacoes/:id/analisar', uploadPDFs.array('novosPDFs'), async 
       novosPDFsUrls.push(
         ...req.files.map(
           (file: Express.Multer.File) =>
-            `http://localhost:${PORT}/uploads/${file.filename}`
+            `/uploads/${file.filename}`
         )
       )
       
@@ -520,6 +520,17 @@ app.delete('/api/solicitacoes/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro ao deletar solicitação' })
   }
 })
+
+// Servir frontend (build) no mesmo servidor — backend + front na mesma origem
+const distPath = path.join(__dirname, '../dist')
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath))
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next()
+    res.sendFile(path.join(distPath, 'index.html'))
+  })
+  console.log('📁 Frontend servido em / (dist/)')
+}
 
 // Iniciar servidor
 app.listen(PORT, () => {

@@ -1,0 +1,18 @@
+# Deploy único no Render (backend + frontend)
+# https://dashboard.render.com → New → Blueprint → Conectar este repositório
+
+services:
+  - type: web
+    name: 420-rerond
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: DATABASE_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

@@ -1,6 +1,10 @@
 import type { Solicitacao, SolicitacaoWithFiles } from '../../models/Solicitacao.js'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api'
+// Em produção (mesmo servidor), usa /api. Em dev, usa localhost se não definir VITE_API_BASE_URL.
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.MODE === 'production' ? '' : 'http://localhost:3001/api') ||
+  '/api'
 
 // Criar nova solicitação
 export const createSolicitacao = async (

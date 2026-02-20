@@ -1,5 +1,7 @@
-// Configuração da URL base da API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+// Em produção (mesmo servidor), usa /api. Em dev, usa localhost se não definir VITE_API_BASE_URL.
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.MODE === 'production' ? '/api' : 'http://localhost:3001/api')
 
 // Interface para opções de requisição
 interface RequestOptions {
